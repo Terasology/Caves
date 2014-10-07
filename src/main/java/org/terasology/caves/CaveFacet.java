@@ -15,10 +15,12 @@
  */
 package org.terasology.caves;
 
-import org.terasology.caves.generation.CaveRasterizer;
-import org.terasology.world.generation.WorldRasterizerPlugin;
-import org.terasology.world.generator.plugin.RegisterPlugin;
+import org.terasology.math.Region3i;
+import org.terasology.world.generation.Border3D;
+import org.terasology.world.generation.facets.base.BaseBooleanFieldFacet3D;
 
-@RegisterPlugin
-public class CaveRasterizerPlugin extends CaveRasterizer implements WorldRasterizerPlugin {
+public class CaveFacet extends BaseBooleanFieldFacet3D {
+    public CaveFacet(Region3i targetRegion, Border3D border) {
+        super(targetRegion, border);
+    }
 }

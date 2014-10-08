@@ -23,7 +23,9 @@ import org.terasology.world.chunks.ChunkConstants;
 import org.terasology.world.chunks.CoreChunk;
 import org.terasology.world.generation.Region;
 import org.terasology.world.generation.WorldRasterizerPlugin;
+import org.terasology.world.generator.plugin.RegisterPlugin;
 
+@RegisterPlugin
 public class CaveRasterizer implements WorldRasterizerPlugin {
     String blockUri;
 

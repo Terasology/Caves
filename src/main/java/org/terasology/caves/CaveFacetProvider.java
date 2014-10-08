@@ -25,9 +25,11 @@ import org.terasology.world.generation.ConfigurableFacetProvider;
 import org.terasology.world.generation.FacetProviderPlugin;
 import org.terasology.world.generation.GeneratingRegion;
 import org.terasology.world.generation.Produces;
+import org.terasology.world.generator.plugin.RegisterPlugin;
 
 import java.util.Collection;
 
+@RegisterPlugin
 @Produces(CaveFacet.class)
 public class CaveFacetProvider implements ConfigurableFacetProvider, FacetProviderPlugin {
     private long seed;

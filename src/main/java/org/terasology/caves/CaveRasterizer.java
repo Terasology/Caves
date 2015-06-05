@@ -45,7 +45,7 @@ public class CaveRasterizer implements WorldRasterizerPlugin {
         CaveFacet caveFacet = chunkRegion.getFacet(CaveFacet.class);
 
         BlockManager blockManager = CoreRegistry.get(BlockManager.class);
-        Block caveBlock = blockManager.getAir();
+        Block caveBlock = blockManager.getBlock(BlockManager.AIR_ID);
         if (blockUri != null) {
             caveBlock = blockManager.getBlock(blockUri);
         }

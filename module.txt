@@ -1,11 +1,10 @@
 {
     "id" : "Caves",
-    "version" : "0.1.1-SNAPSHOT",
+    "version" : "0.2.0-SNAPSHOT",
     "author" : "Josharias",
     "displayName" : "Caves",
     "description" : "Adds configurable caves to the world",
     "dependencies" :
     [
-        {"id": "CustomOreGen", "minVersion": "0.1.0"}
     ]
 }

@@ -15,25 +15,29 @@
  */
 package org.terasology.caves;
 
-import org.terasology.customOreGen.PDist;
-import org.terasology.customOreGen.Structure;
-import org.terasology.customOreGen.StructureDefinition;
-import org.terasology.customOreGen.VeinsStructureDefinition;
 import org.terasology.entitySystem.Component;
+import org.terasology.math.geom.Vector3f;
+import org.terasology.math.geom.Vector3i;
 import org.terasology.rendering.nui.properties.Range;
+import org.terasology.utilities.procedural.AbstractNoise;
+import org.terasology.utilities.procedural.Noise;
+import org.terasology.utilities.procedural.PerlinNoise;
+import org.terasology.utilities.procedural.SubSampledNoise;
 import org.terasology.world.generation.ConfigurableFacetProvider;
+import org.terasology.world.generation.Facet;
 import org.terasology.world.generation.FacetProviderPlugin;
 import org.terasology.world.generation.GeneratingRegion;
 import org.terasology.world.generation.Produces;
+import org.terasology.world.generation.Requires;
+import org.terasology.world.generation.facets.SurfaceHeightFacet;
 import org.terasology.world.generator.plugin.RegisterPlugin;
-
-import java.util.Collection;
 
 @RegisterPlugin
 @Produces(CaveFacet.class)
+@Requires(@Facet(SurfaceHeightFacet.class))
 public class CaveFacetProvider implements ConfigurableFacetProvider, FacetProviderPlugin {
-    private long seed;
     private CaveFacetProviderConfiguration configuration = new CaveFacetProviderConfiguration();
+    private long seed;
 
     @Override
     public void setSeed(long seed) {
@@ -42,32 +46,40 @@ public class CaveFacetProvider implements ConfigurableFacetProvider, FacetProvid
 
     @Override
     public void process(GeneratingRegion region) {
+        float width = 1f;
+        float height = 1f;
+        float totalDepthToScaleCaves = 64;
+        float amountOfCavesNearSurface = 0.5f;
+        float sharpSurfaceCutoffDepth = 12;
+        float minDepth = 0;
+        float amountOfCaves = 0.75f;
+        float noiseLevel = 0.3f;
+
+        // at default settings,  make caves wider than tall.
+        Noise caveNoise = new SubSampledNoise(new RidgedNoise(new PerlinNoise(seed + 2), 2), new Vector3f(0.06f * (1f / width), 0.09f * (1f / height), 0.06f * (1f / width)), 4);
+        Noise fadeCaveNoise = new SubSampledNoise(new PerlinNoise(seed + 3), new Vector3f(0.006f * (1f / width), 0.006f * (1f / height), 0.006f * (1f / width)), 1);
         CaveFacet facet = new CaveFacet(region.getRegion(), region.getBorderForFacet(CaveFacet.class));
+        SurfaceHeightFacet surfaceHeightFacet = region.getRegionFacet(SurfaceHeightFacet.class);
 
-        /* AnotherWorld
-        PDist caveFrequency = new PDist(0.1f, 0f);
-        PDist mainCaveRadius = new PDist(5f, 1f);
-        PDist mainCaveYLevel = new PDist(32f, 32f);
-        PDist tunnelLength = new PDist(45f, 10f);
-        PDist tunnelRadius = new PDist(2f, 0.5f);
-        */
+        for (Vector3i pos : region.getRegion()) {
+            float depth = surfaceHeightFacet.getWorld(pos.x, pos.z) - pos.y;
+            if (depth > minDepth) {
+                float noiseValue = caveNoise.noise(pos.x, pos.y, pos.z);
+                // fade caves out as they reach the surface or above the surface
+                float fadeForSurfaceCutoff = Math.min(1f - amountOfCavesNearSurface, Math.max(0f, 1f - (depth / sharpSurfaceCutoffDepth)));
+                // gradually decrease caves as they get closer to the surface
+                float fadeForScale = Math.max(0f, 1f - (depth / totalDepthToScaleCaves)) * (1f - amountOfCavesNearSurface);
 
-        // note, try to contain the maxRange to an optimal range of neighboring chunks
-        PDist caveFrequency = new PDist(configuration.frequency, configuration.frequency * 0.25f);
-        PDist mainCaveRadius = new PDist(configuration.caveRadius, configuration.caveRadius * 0.5f);
-        PDist mainCaveYLevel = new PDist(32f, 32f);
-        PDist tunnelLength = new PDist(40f, 10f);
-        PDist tunnelRadius = new PDist(configuration.tunnelRadius, configuration.tunnelRadius * 0.25f);
+                float noiseLevelIncrease = (1f - noiseLevel)
+                        * (
+                        Math.max(fadeForSurfaceCutoff, fadeForScale)
+                                // fade caves on a broad scale to stop them from being uniform
+                                // Amount added to the noise value: 1 = prevent all caves.  0 = allow normal perlin.  -1 = all caves
+                                + Math.max(0f, Math.abs(fadeCaveNoise.noise(pos.x, pos.y, pos.z)) + (2f * (1f - amountOfCaves)) - 1f)
+                );
 
-        StructureDefinition structureDefinition = new VeinsStructureDefinition(caveFrequency,
-                mainCaveRadius, mainCaveYLevel, new PDist(4f, 1f), new PDist(0f, 0.1f), tunnelLength,
-                new PDist(100f, 0f), new PDist(0f, 0f), new PDist(0.25f, 0f), new PDist(5f, 0f), new PDist(0.5f, 0.5f),
-                tunnelRadius, new PDist(1f, 0f), new PDist(1f, 0f));
-
-        Collection<Structure> structures = structureDefinition.generateStructures(seed, region.getRegion());
-
-        for (Structure structure : structures) {
-            structure.generateStructure(new CaveStructureCallback(facet));
+                facet.setWorld(pos, noiseValue > noiseLevel + noiseLevelIncrease);
+            }
         }
 
         region.setRegionFacet(CaveFacet.class, facet);
@@ -97,4 +109,145 @@ public class CaveFacetProvider implements ConfigurableFacetProvider, FacetProvid
         @Range(min = 0, max = 10f, increment = 1f, precision = 0, description = "Tunnel Radius")
         public float tunnelRadius = 4f;
     }
+
+    public static class RidgedNoise extends AbstractNoise {
+
+        /**
+         * Default persistence value
+         */
+        public static final double DEFAULT_PERSISTENCE = 0.836281;
+
+        /**
+         * Default lacunarity value
+         */
+        public static final double DEFAULT_LACUNARITY = 2.1379201;
+
+        private double lacunarity = DEFAULT_LACUNARITY;
+        private double persistence = DEFAULT_PERSISTENCE;
+
+        private int octaves;
+        private float[] spectralWeights;
+        private float scale;                // 1/sum of all weights
+        private final Noise other;
+
+        /**
+         * Initialize with 9 octaves - <b>this is quite expensive, but backwards compatible</b>
+         *
+         * @param other the noise to use as a basis
+         */
+        public RidgedNoise(Noise other) {
+            this(other, 9);
+        }
+
+        /**
+         * @param other   other the noise to use as a basis
+         * @param octaves the number of octaves to use
+         */
+        public RidgedNoise(Noise other, int octaves) {
+            this.other = other;
+            setOctaves(octaves);
+        }
+
+        /**
+         * Returns Ridged noise at the given position.
+         *
+         * @param x Position on the x-axis
+         * @param y Position on the y-axis
+         * @param z Position on the z-axis
+         * @return The noise value in the range of the base noise function
+         */
+        @Override
+        public float noise(float x, float y, float z) {
+            float result = other.noise(x, y, z);
+
+            float workingX = x;
+            float workingY = y;
+            float workingZ = z;
+            for (int i = 1; i < getOctaves(); i++) {
+                workingX *= Math.pow(2, i) * Math.abs(result);
+                workingY *= Math.pow(2, i) * Math.abs(result);
+                workingZ *= Math.pow(2, i) * Math.abs(result);
+                result += Math.abs(other.noise(workingX, workingY, workingZ)) * (1f / Math.pow(2, i));
+
+            }
+
+            return result;// * scale;
+        }
+
+        private static float computeScale(float[] spectralWeights) {
+            float sum = 0;
+            for (float weight : spectralWeights) {
+                sum += weight;
+            }
+            return 1.0f / sum;
+        }
+
+        /**
+         * @param octaves the number of octaves used for computation
+         */
+        public void setOctaves(int octaves) {
+            this.octaves = octaves;
+            updateWeights();
+        }
+
+        /**
+         * @return the number of octaves
+         */
+        public int getOctaves() {
+            return octaves;
+        }
+
+        /**
+         * Lacunarity is what makes the frequency grow. Each octave
+         * the frequency is multiplied by the lacunarity.
+         *
+         * @return the lacunarity
+         */
+        public double getLacunarity() {
+            return this.lacunarity;
+        }
+
+        /**
+         * Lacunarity is what makes the frequency grow. Each octave
+         * the frequency is multiplied by the lacunarity.
+         *
+         * @param lacunarity the lacunarity
+         */
+        public void setLacunarity(double lacunarity) {
+            this.lacunarity = lacunarity;
+        }
+
+        /**
+         * Persistence is what makes the amplitude shrink.
+         * More precicely the amplitude of octave i = lacunarity^(-persistence * i)
+         *
+         * @return the persistance
+         */
+        public double getPersistance() {
+            return this.persistence;
+        }
+
+        /**
+         * Persistence is what makes the amplitude shrink.
+         * More precisely the amplitude of octave i = lacunarity^(-persistence * i)
+         *
+         * @param persistence the persistence to set
+         */
+        public void setPersistence(double persistence) {
+            this.persistence = persistence;
+            updateWeights();
+        }
+
+        private void updateWeights() {
+            // recompute weights eagerly
+            spectralWeights = new float[octaves];
+
+            for (int i = 0; i < octaves; i++) {
+                spectralWeights[i] = (float) Math.pow(lacunarity, -persistence * i);
+            }
+
+            scale = computeScale(spectralWeights);
+        }
+    }
+
 }

@@ -37,27 +37,30 @@ import org.terasology.world.generator.plugin.RegisterPlugin;
 @Requires(@Facet(SurfaceHeightFacet.class))
 public class CaveFacetProvider implements ConfigurableFacetProvider, FacetProviderPlugin {
     private CaveFacetProviderConfiguration configuration = new CaveFacetProviderConfiguration();
-    private long seed;
+
+    Noise baseCaveNoise;
+    Noise baseFadeCaveNoise;
 
     @Override
     public void setSeed(long seed) {
-        this.seed = seed;
+        baseCaveNoise = new PerlinNoise(seed + 2);
+        baseFadeCaveNoise = new PerlinNoise(seed + 3);
     }
 
     @Override
     public void process(GeneratingRegion region) {
-        float width = 1f;
-        float height = 1f;
-        float totalDepthToScaleCaves = 64;
-        float amountOfCavesNearSurface = 0.5f;
+        float width = configuration.width;
+        float height = configuration.height;
+        float gradualIncreaseOverDepth = configuration.gradualIncreaseOverDepth;
+        float amountOfCavesNearSurface = configuration.amountofCavesNearSurface;
         float sharpSurfaceCutoffDepth = 12;
         float minDepth = 0;
-        float amountOfCaves = 0.75f;
-        float noiseLevel = 0.3f;
+        float amountOfCaves = configuration.amountOfCaves;
+        float noiseLevel = configuration.rawAmount;
 
         // at default settings,  make caves wider than tall.
-        Noise caveNoise = new SubSampledNoise(new RidgedNoise(new PerlinNoise(seed + 2), 2), new Vector3f(0.06f * (1f / width), 0.09f * (1f / height), 0.06f * (1f / width)), 4);
-        Noise fadeCaveNoise = new SubSampledNoise(new PerlinNoise(seed + 3), new Vector3f(0.006f * (1f / width), 0.006f * (1f / height), 0.006f * (1f / width)), 1);
+        Noise caveNoise = new SubSampledNoise(new RidgedNoise(baseCaveNoise, 2), new Vector3f(0.06f * (1f / width), 0.09f * (1f / height), 0.06f * (1f / width)), 4);
+        Noise fadeCaveNoise = new SubSampledNoise(baseFadeCaveNoise, new Vector3f(0.006f * (1f / width), 0.006f * (1f / height), 0.006f * (1f / width)), 1);
         CaveFacet facet = new CaveFacet(region.getRegion(), region.getBorderForFacet(CaveFacet.class));
         SurfaceHeightFacet surfaceHeightFacet = region.getRegionFacet(SurfaceHeightFacet.class);
 
@@ -68,7 +71,7 @@ public class CaveFacetProvider implements ConfigurableFacetProvider, FacetProvid
                 // fade caves out as they reach the surface or above the surface
                 float fadeForSurfaceCutoff = Math.min(1f - amountOfCavesNearSurface, Math.max(0f, 1f - (depth / sharpSurfaceCutoffDepth)));
                 // gradually decrease caves as they get closer to the surface
-                float fadeForScale = Math.max(0f, 1f - (depth / totalDepthToScaleCaves)) * (1f - amountOfCavesNearSurface);
+                float fadeForScale = Math.max(0f, 1f - (depth / gradualIncreaseOverDepth)) * (1f - amountOfCavesNearSurface);
 
                 float noiseLevelIncrease = (1f - noiseLevel)
                         * (
@@ -102,12 +105,19 @@ public class CaveFacetProvider implements ConfigurableFacetProvider, FacetProvid
     }
 
     private static class CaveFacetProviderConfiguration implements Component {
-        @Range(min = 0, max = 1f, increment = 0.01f, precision = 2, description = "Cave Frequency")
-        public float frequency = 0.1f;
-        @Range(min = 0, max = 25f, increment = 1f, precision = 0, description = "Cave Radius")
-        public float caveRadius = 8f;
-        @Range(min = 0, max = 10f, increment = 1f, precision = 0, description = "Tunnel Radius")
-        public float tunnelRadius = 4f;
+        @Range(min = 0, max = 1f, increment = 0.05f, precision = 2, description = "Amount of Caves")
+        public float amountOfCaves = 0.75f;
+        @Range(min = 0, max = 2f, increment = 0.05f, precision = 2, description = "Width")
+        public float width = 1f;
+        @Range(min = 0, max = 2f, increment = 0.05f, precision = 2, description = "Height")
+        public float height = 1f;
+        @Range(min = 0, max = 1f, increment = 0.05f, precision = 2, description = "Amount of caves near surface")
+        public float amountofCavesNearSurface = 0.5f;
+        @Range(min = 1f, max = 200f, increment = 5f, precision = 0, description = "Gradual increase over depth")
+        public float gradualIncreaseOverDepth = 64f;
+        @Range(min = -1f, max = 1, increment = 0.05f, precision = 2, description = "Raw Amount (use at own risk)")
+        public float rawAmount = 0.3f;
+
     }
 
     public static class RidgedNoise extends AbstractNoise {

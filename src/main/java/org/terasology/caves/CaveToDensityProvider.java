@@ -22,12 +22,11 @@ import org.terasology.world.generation.GeneratingRegion;
 import org.terasology.world.generation.Requires;
 import org.terasology.world.generation.Updates;
 import org.terasology.world.generation.facets.DensityFacet;
-import org.terasology.world.generation.facets.SurfaceHeightFacet;
 import org.terasology.world.generator.plugin.RegisterPlugin;
 
 @RegisterPlugin
 @Updates(@Facet(DensityFacet.class))
-@Requires({@Facet(SurfaceHeightFacet.class), @Facet(CaveFacet.class)})
+@Requires(@Facet(CaveFacet.class))
 public class CaveToDensityProvider implements FacetProviderPlugin {
     @Override
     public void setSeed(long seed) {
@@ -40,7 +39,7 @@ public class CaveToDensityProvider implements FacetProviderPlugin {
 
         for (Vector3i pos : region.getRegion()) {
             if (caveFacet.getWorld(pos)) {
-                densityFacet.setWorld(pos, 0);
+                densityFacet.setWorld(pos, -1f);
             }
         }
     }

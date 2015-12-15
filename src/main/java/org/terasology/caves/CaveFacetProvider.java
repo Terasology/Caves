@@ -59,15 +59,19 @@ public class CaveFacetProvider implements ConfigurableFacetProvider, FacetProvid
         float noiseLevel = configuration.rawAmount;
 
         // at default settings,  make caves wider than tall.
-        Noise caveNoise = new SubSampledNoise(new RidgedNoise(baseCaveNoise, 2), new Vector3f(0.06f * (1f / width), 0.09f * (1f / height), 0.06f * (1f / width)), 4);
-        Noise fadeCaveNoise = new SubSampledNoise(baseFadeCaveNoise, new Vector3f(0.006f * (1f / width), 0.006f * (1f / height), 0.006f * (1f / width)), 1);
+        SubSampledNoise caveNoise = new SubSampledNoise(new RidgedNoise(baseCaveNoise, 2), new Vector3f(0.06f * (1f / width), 0.09f * (1f / height), 0.06f * (1f / width)), 4);
+        SubSampledNoise fadeCaveNoise = new SubSampledNoise(baseFadeCaveNoise, new Vector3f(0.006f * (1f / width), 0.006f * (1f / height), 0.006f * (1f / width)), 1);
         CaveFacet facet = new CaveFacet(region.getRegion(), region.getBorderForFacet(CaveFacet.class));
         SurfaceHeightFacet surfaceHeightFacet = region.getRegionFacet(SurfaceHeightFacet.class);
+
+        // get noise in batch for performance reasons.  Getting it by individual position takes 10 times as long
+        float[] caveNoiseValues = caveNoise.noise(facet.getWorldRegion());
+        float[] fadeCaveNoiseValues = fadeCaveNoise.noise(facet.getWorldRegion());
 
         for (Vector3i pos : region.getRegion()) {
             float depth = surfaceHeightFacet.getWorld(pos.x, pos.z) - pos.y;
             if (depth > minDepth) {
-                float noiseValue = caveNoise.noise(pos.x, pos.y, pos.z);
+                float noiseValue = caveNoiseValues[facet.getWorldIndex(pos)];
                 // fade caves out as they reach the surface or above the surface
                 float fadeForSurfaceCutoff = Math.min(1f - amountOfCavesNearSurface, Math.max(0f, 1f - (depth / sharpSurfaceCutoffDepth)));
                 // gradually decrease caves as they get closer to the surface
@@ -78,7 +82,7 @@ public class CaveFacetProvider implements ConfigurableFacetProvider, FacetProvid
                         Math.max(fadeForSurfaceCutoff, fadeForScale)
                                 // fade caves on a broad scale to stop them from being uniform
                                 // Amount added to the noise value: 1 = prevent all caves.  0 = allow normal perlin.  -1 = all caves
-                                + Math.max(0f, Math.abs(fadeCaveNoise.noise(pos.x, pos.y, pos.z)) + (2f * (1f - amountOfCaves)) - 1f)
+                                + Math.max(0f, Math.abs(fadeCaveNoiseValues[facet.getWorldIndex(pos)]) + (2f * (1f - amountOfCaves)) - 1f)
                 );
 
                 facet.setWorld(pos, noiseValue > noiseLevel + noiseLevelIncrease);

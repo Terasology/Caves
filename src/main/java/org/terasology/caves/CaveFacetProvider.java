@@ -21,7 +21,7 @@ import org.terasology.math.geom.Vector3i;
 import org.terasology.rendering.nui.properties.Range;
 import org.terasology.utilities.procedural.AbstractNoise;
 import org.terasology.utilities.procedural.Noise;
-import org.terasology.utilities.procedural.SimplexNoise;
+import org.terasology.utilities.procedural.PerlinNoise;
 import org.terasology.utilities.procedural.SubSampledNoise;
 import org.terasology.world.generation.ConfigurableFacetProvider;
 import org.terasology.world.generation.Facet;
@@ -43,8 +43,8 @@ public class CaveFacetProvider implements ConfigurableFacetProvider, FacetProvid
 
     @Override
     public void setSeed(long seed) {
-        baseCaveNoise = new SimplexNoise(seed + 2);
-        baseFadeCaveNoise = new SimplexNoise(seed + 3);
+        baseCaveNoise = new PerlinNoise(seed + 2);
+        baseFadeCaveNoise = new PerlinNoise(seed + 3);
     }
 
     @Override
@@ -81,7 +81,7 @@ public class CaveFacetProvider implements ConfigurableFacetProvider, FacetProvid
                         * (
                         Math.max(fadeForSurfaceCutoff, fadeForScale)
                                 // fade caves on a broad scale to stop them from being uniform
-                                // Amount added to the noise value: 1 = prevent all caves.  0 = allow normal simplex.  -1 = all caves
+                                // Amount added to the noise value: 1 = prevent all caves.  0 = allow normal perlin.  -1 = all caves
                                 + Math.max(0f, Math.abs(fadeCaveNoiseValues[facet.getWorldIndex(pos)]) + (2f * (1f - amountOfCaves)) - 1f)
                 );
 

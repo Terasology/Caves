@@ -21,9 +21,9 @@ import org.terasology.world.generation.Facet;
 import org.terasology.world.generation.facets.base.BaseFieldFacet2D;
 
 /**
- * This {@link Facet} adds to the {@link CaveFacet } by indicating the Y/height value throughout the
- * {@link Region3i} that represents the floor of the {@link CaveFacet}, if present. If no Cave is present then an
- * invalid value is provided.
+ * This {@link Facet} adds to the {@link CaveFacet } by indicating the Y (height) value throughout the
+ * {@link Region3i} that represents the floor of the {@code CaveFacet}, if present. If no Cave floor is present then
+ * {@link Float#NaN} will be the value for that location.
  */
 public class CaveFloorFacet extends BaseFieldFacet2D {
     public CaveFloorFacet(Region3i targetRegion, Border3D border) {

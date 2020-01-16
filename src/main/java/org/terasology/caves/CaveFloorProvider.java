@@ -40,7 +40,8 @@ public class CaveFloorProvider implements FacetProviderPlugin {
     public static final float NO_CAVE = Float.NaN;
 
     /**
-     * If no region calls region.getFacet(<the provided facet class>) then this method 'process' will never be called
+     * <em>Note: </em>If no {@code FacetProvider} or {@code WorldRasterizer} calls
+     * region.getFacet(<the provided facet class>) then this method 'process' will never be called
      * @param region
      */
     @Override
@@ -54,6 +55,8 @@ public class CaveFloorProvider implements FacetProviderPlugin {
             for (int z = worldRegion.minZ(); z <= worldRegion.maxZ(); ++z) {
                 // The first false we encounter may be the ceiling.
                 // So the floor is indicated by the first false after the we encounter a true
+                // TODO: This will not work if the highest block in a region is actually the floor (i.e. the lowest
+                // TODO: block of the region above is air).
                 boolean foundTrue = false;
                 int y;
                 for (y = worldRegion.maxY(); y >= worldRegion.minY(); --y) {

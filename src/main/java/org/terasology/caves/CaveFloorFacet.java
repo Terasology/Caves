@@ -21,9 +21,12 @@ import org.terasology.world.generation.Facet;
 import org.terasology.world.generation.facets.base.BaseFieldFacet2D;
 
 /**
- * This {@link Facet} adds to the {@link CaveFacet } by indicating the Y (height) value throughout the
+ * This {@link Facet} adds to the {@link CaveFacet} by indicating the Y (height) value throughout the
  * {@link Region3i} that represents the floor of the {@code CaveFacet}, if present. If no Cave floor is present then
  * {@link Float#NaN} will be the value for that location.
+ *
+ * <p><em>Usage notes:</em> The value of the {@code CaveFloor} is the height of the first solid block. So in order
+ * to place something "on the floor" of the cave you should place it at {@code caveFloorFacet.get(x, z) + 1}</p>
  */
 public class CaveFloorFacet extends BaseFieldFacet2D {
     public CaveFloorFacet(Region3i targetRegion, Border3D border) {

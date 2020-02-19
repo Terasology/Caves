@@ -32,7 +32,7 @@ import org.terasology.world.generator.plugin.RegisterPlugin;
 
 @RegisterPlugin
 @Produces(CaveObjectFacet.class)
-@Requires({@Facet(CaveFloorFacet.class), @Facet(value = SurfaceHeightFacet.class)})
+@Requires({@Facet(CaveLocationFacet.class), @Facet(value = SurfaceHeightFacet.class)})
 public class CaveObjectProvider implements ConfigurableFacetProvider, FacetProviderPlugin {
 
     private Noise densityNoiseGen;
@@ -46,7 +46,7 @@ public class CaveObjectProvider implements ConfigurableFacetProvider, FacetProvi
 
     @Override
     public void process(GeneratingRegion region) {
-        CaveFloorFacet floorFacet = region.getRegionFacet(CaveFloorFacet.class);
+        CaveLocationFacet locationFacet = region.getRegionFacet(CaveLocationFacet.class);
         CaveObjectFacet facet =
                 new CaveObjectFacet(region.getRegion(), region.getBorderForFacet(CaveObjectFacet.class));
 
@@ -56,18 +56,27 @@ public class CaveObjectProvider implements ConfigurableFacetProvider, FacetProvi
 
         for (int z = worldRegion.minZ(); z <= worldRegion.maxZ(); z++) {
             for (int x = worldRegion.minX(); x <= worldRegion.maxX(); x++) {
-                float caveFloorHeight = floorFacet.getWorld(x, z);
-                int caveFloorInt = TeraMath.floorToInt(caveFloorHeight);
+                CaveLocation[] caveLocations = locationFacet.getWorld(x, z);
+                for (CaveLocation location : caveLocations) {
 
-                // If this is a cave and is the floor is in the region
-                if (hasCave(caveFloorHeight) && caveFloorInt >= minY && caveFloorInt <= maxY) {
-                    // Does it meet depth requirements
-                    SurfaceHeightFacet surfaceHeightFacet = region.getRegionFacet(SurfaceHeightFacet.class);
-                    float surface = surfaceHeightFacet.getWorld(x, z);
-                    int intSurface = TeraMath.floorToInt(surface);
-                    boolean isDeepEnough = caveFloorInt < (float) intSurface - configuration.minDepth;
-                    if (isDeepEnough && Math.abs(densityNoiseGen.noise(x, z)) < configuration.density) {
-                        facet.setWorld(x, caveFloorInt + 1, z, CaveObjectType.DEFAULT);
+                    float caveFloorHeight = location.floor;
+                    int caveFloorInt = TeraMath.floorToInt(caveFloorHeight);
+
+                    float caveCeilingHeight = location.ceiling;
+                    int caveCeilingInt = TeraMath.floorToInt(caveCeilingHeight);
+
+                    // If this is a cave and if the floor and ceiling is in the region
+                    if (hasCave(caveFloorHeight) && caveFloorInt >= minY && caveFloorInt <= maxY
+                            && hasCave(caveCeilingHeight) && caveCeilingInt >= minY && caveCeilingInt <= maxY) {
+                        // Does it meet depth requirements
+                        SurfaceHeightFacet surfaceHeightFacet = region.getRegionFacet(SurfaceHeightFacet.class);
+                        float surface = surfaceHeightFacet.getWorld(x, z);
+                        int intSurface = TeraMath.floorToInt(surface);
+                        boolean isDeepEnough = caveFloorInt < (float) intSurface - configuration.minDepth;
+                        if (isDeepEnough && Math.abs(densityNoiseGen.noise(x, z)) < configuration.density) {
+                            facet.setWorld(x, caveFloorInt + 1, z, CaveObjectType.DEFAULT);
+                            facet.setWorld(x, caveCeilingInt - 1, z, CaveObjectType.DEFAULT);
+                        }
                     }
                 }
             }
@@ -100,7 +109,7 @@ public class CaveObjectProvider implements ConfigurableFacetProvider, FacetProvi
         private float density = 0.06f;
 
         @Range(min = 0, max = 250f, increment = 1f, precision = 0,
-                description = "The minimum distance below the surface before crystals start to appear")
+                description = "The minimum distance below the surface before objects start to appear")
         private float minDepth = 5f;
     }
 

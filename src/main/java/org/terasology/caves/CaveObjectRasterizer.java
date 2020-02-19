@@ -23,7 +23,7 @@ import org.terasology.world.block.Block;
 import org.terasology.world.block.BlockManager;
 import org.terasology.world.chunks.CoreChunk;
 import org.terasology.world.generation.Region;
-import org.terasology.world.generation.RunsAfter;
+import org.terasology.world.generation.RequiresRasterizer;
 import org.terasology.world.generation.WorldRasterizerPlugin;
 import org.terasology.world.generator.plugin.RegisterPlugin;
 
@@ -31,7 +31,7 @@ import java.util.List;
 import java.util.Map;
 
 @RegisterPlugin
-@RunsAfter(CaveRasterizer.class)
+@RequiresRasterizer(CaveRasterizer.class)
 public class CaveObjectRasterizer implements WorldRasterizerPlugin {
 
     private final Map<CaveObjectType, List<Block>> typeListEnumMap = Maps.newEnumMap(CaveObjectType.class);

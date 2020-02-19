@@ -30,7 +30,10 @@ import org.terasology.world.generator.plugin.RegisterPlugin;
 import java.util.List;
 import java.util.Map;
 
-@RegisterPlugin
+/**
+ * An example rasterizer for placing objects inside caves using {@link CaveLocationFacet}.
+ */
+//@RegisterPlugin /* uncomment to enable */
 @RequiresRasterizer(CaveRasterizer.class)
 public class CaveObjectRasterizer implements WorldRasterizerPlugin {
 

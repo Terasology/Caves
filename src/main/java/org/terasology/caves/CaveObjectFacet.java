@@ -20,7 +20,7 @@ import org.terasology.world.generation.Border3D;
 import org.terasology.world.generation.facets.base.SparseObjectFacet3D;
 
 /**
- *
+ * An example Facet for placing objects inside caves.
  */
 public class CaveObjectFacet extends SparseObjectFacet3D<CaveObjectType> {
 

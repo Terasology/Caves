@@ -30,7 +30,12 @@ import org.terasology.world.generation.Requires;
 import org.terasology.world.generation.facets.SurfaceHeightFacet;
 import org.terasology.world.generator.plugin.RegisterPlugin;
 
-@RegisterPlugin
+
+/**
+ * An example provider for placing objects inside caves using {@link CaveLocationFacet} to determine the floor and
+ * ceiling of a cave.
+ */
+//@RegisterPlugin /* uncomment to enable */
 @Produces(CaveObjectFacet.class)
 @Requires({@Facet(CaveLocationFacet.class), @Facet(value = SurfaceHeightFacet.class)})
 public class CaveObjectProvider implements ConfigurableFacetProvider, FacetProviderPlugin {

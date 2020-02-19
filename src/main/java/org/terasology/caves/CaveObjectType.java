@@ -15,6 +15,9 @@
  */
 package org.terasology.caves;
 
+/**
+ * An example object type for use with {@link CaveObjectFacet}.
+ */
 public enum CaveObjectType {
     DEFAULT
 }

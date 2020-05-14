@@ -46,7 +46,7 @@ public class CaveObjectRasterizer implements WorldRasterizerPlugin {
         blockManager = CoreRegistry.get(BlockManager.class);
 
         typeListEnumMap.put(CaveObjectType.DEFAULT, ImmutableList.<Block>of(
-                blockManager.getBlockFamily("CoreBlocks:Torch").getArchetypeBlock()));
+                blockManager.getBlockFamily("CoreAssets:Torch").getArchetypeBlock()));
     }
 
     @Override

@@ -7,6 +7,5 @@
     "dependencies": [
         { "id": "CoreAssets", "minVersion": "2.0.1" }
     ],
-    "isWorld": true,
-    "isLibrary": true
+    "isWorld": true
 }

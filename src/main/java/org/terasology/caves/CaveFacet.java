@@ -25,6 +25,9 @@ public class CaveFacet extends BaseBooleanFieldFacet3D {
         super(targetRegion, border);
     }
 
+    /**
+     * The index of the given position in arrays corresponding to the region this facet covers.
+     */
     public int getWorldIndex(Vector3i pos) {
         return getWorldIndex(pos.x, pos.y, pos.z);
     }

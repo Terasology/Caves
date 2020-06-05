@@ -37,7 +37,6 @@ import org.terasology.world.generator.plugin.RegisterPlugin;
 @Produces(CaveFacet.class)
 @Requires(@Facet(SurfaceHeightFacet.class))
 public class CaveFacetProvider implements FacetProviderPlugin {
-    private CaveFacetProviderConfiguration configuration = new CaveFacetProviderConfiguration();
 
     SubSampledNoise3D[] caveNoise = new SubSampledNoise3D[2];
 

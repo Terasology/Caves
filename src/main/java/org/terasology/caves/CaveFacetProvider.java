@@ -12,9 +12,13 @@ import org.terasology.utilities.procedural.SimplexNoise;
 import org.terasology.utilities.procedural.SubSampledNoise;
 import org.terasology.world.generation.ConfigurableFacetProvider;
 import org.terasology.world.generation.Facet;
+import org.terasology.world.generation.FacetBorder;
 import org.terasology.world.generation.FacetProviderPlugin;
 import org.terasology.world.generation.GeneratingRegion;
 import org.terasology.world.generation.Produces;
+import org.terasology.world.generation.Requires;
+import org.terasology.world.generation.facets.SeaLevelFacet;
+import org.terasology.world.generation.facets.SurfaceHeightFacet;
 import org.terasology.world.generator.plugin.RegisterPlugin;
 
 /**
@@ -25,6 +29,10 @@ import org.terasology.world.generator.plugin.RegisterPlugin;
  */
 @RegisterPlugin
 @Produces(CaveFacet.class)
+@Requires({
+    @Facet(SeaLevelFacet.class),
+    @Facet(value = SurfaceHeightFacet.class, border = @FacetBorder(sides = 1))
+})
 public class CaveFacetProvider implements FacetProviderPlugin {
 
     SubSampledNoise[] caveNoise = new SubSampledNoise[2];
@@ -39,6 +47,8 @@ public class CaveFacetProvider implements FacetProviderPlugin {
 
     @Override
     public void process(GeneratingRegion region) {
+        SeaLevelFacet seaLevel = region.getRegionFacet(SeaLevelFacet.class);
+        SurfaceHeightFacet surfaceHeight = region.getRegionFacet(SurfaceHeightFacet.class);
 
         CaveFacet facet = new CaveFacet(region.getRegion(), region.getBorderForFacet(CaveFacet.class));
 
@@ -49,8 +59,16 @@ public class CaveFacetProvider implements FacetProviderPlugin {
             float frequencyReduction = (float)Math.min(0.3,Math.max(0,(100+pos.y)/400.0)); //0: no reduction, 0.7: pretty much no caves. Also somewhat increases the tendency of caves to loop rather than continuing indefinitely.
             int i = facet.getWorldIndex(pos);
             float noiseValue = (float) Math.hypot(caveNoiseValues[0][i], caveNoiseValues[1][i]+frequencyReduction);
-
-            facet.setWorld(pos, noiseValue < 0.08);
+            
+            boolean inCave = noiseValue < 0.08 - pos.y/1000f;
+            boolean requiredSurface = pos.y <= seaLevel.getSeaLevel() && (
+                   pos.y + 1 > surfaceHeight.getWorld(pos.x, pos.z)
+                || pos.y + 1 > surfaceHeight.getWorld(pos.x + 1, pos.z)
+                || pos.y + 1 > surfaceHeight.getWorld(pos.x - 1, pos.z)
+                || pos.y + 1 > surfaceHeight.getWorld(pos.x, pos.z + 1)
+                || pos.y + 1 > surfaceHeight.getWorld(pos.x, pos.z - 1)
+            );
+            facet.setWorld(pos, inCave && !requiredSurface);
         }
 
         region.setRegionFacet(CaveFacet.class, facet);

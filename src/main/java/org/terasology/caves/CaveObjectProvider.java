@@ -2,20 +2,19 @@
 // SPDX-License-Identifier: Apache-2.0
 package org.terasology.caves;
 
-import org.terasology.entitySystem.Component;
-import org.terasology.math.Region3i;
+import org.terasology.engine.entitySystem.Component;
+import org.terasology.engine.math.Region3i;
+import org.terasology.engine.utilities.procedural.Noise;
+import org.terasology.engine.utilities.procedural.WhiteNoise;
+import org.terasology.engine.world.generation.ConfigurableFacetProvider;
+import org.terasology.engine.world.generation.Facet;
+import org.terasology.engine.world.generation.FacetProviderPlugin;
+import org.terasology.engine.world.generation.GeneratingRegion;
+import org.terasology.engine.world.generation.Produces;
+import org.terasology.engine.world.generation.Requires;
+import org.terasology.engine.world.generation.facets.SurfaceHeightFacet;
 import org.terasology.math.TeraMath;
 import org.terasology.nui.properties.Range;
-import org.terasology.utilities.procedural.Noise;
-import org.terasology.utilities.procedural.WhiteNoise;
-import org.terasology.world.generation.ConfigurableFacetProvider;
-import org.terasology.world.generation.Facet;
-import org.terasology.world.generation.FacetProviderPlugin;
-import org.terasology.world.generation.GeneratingRegion;
-import org.terasology.world.generation.Produces;
-import org.terasology.world.generation.Requires;
-import org.terasology.world.generation.facets.SurfaceHeightFacet;
-import org.terasology.world.generator.plugin.RegisterPlugin;
 
 
 /**
@@ -98,11 +97,11 @@ public class CaveObjectProvider implements ConfigurableFacetProvider, FacetProvi
     private static class CaveObjectConfiguration implements Component {
         @Range(min = 0, max = 1.0f, increment = 0.01f, precision = 2,
                 description = "Define the overall amount of objects")
-        private float density = 0.06f;
+        private final float density = 0.06f;
 
         @Range(min = 0, max = 250f, increment = 1f, precision = 0,
                 description = "The minimum distance below the surface before objects start to appear")
-        private float minDepth = 5f;
+        private final float minDepth = 5f;
     }
 
 }

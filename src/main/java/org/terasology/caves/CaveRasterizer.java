@@ -26,7 +26,7 @@ import org.terasology.world.generation.WorldRasterizerPlugin;
 import org.terasology.world.generator.plugin.RegisterPlugin;
 
 /**
- * Still need this rasterizer because just changing the density does not provide the correct effect with the default perlin generator
+ * Just changing the density would leave caves below sea-level full of water, so a separate rasterizer is needed.
  */
 @RegisterPlugin
 public class CaveRasterizer implements WorldRasterizerPlugin {

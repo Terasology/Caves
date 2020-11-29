@@ -14,8 +14,7 @@ import org.terasology.world.generation.FacetProviderPlugin;
 import org.terasology.world.generation.GeneratingRegion;
 import org.terasology.world.generation.Produces;
 import org.terasology.world.generation.Requires;
-import org.terasology.world.generation.facets.SurfaceHeightFacet;
-import org.terasology.world.generator.plugin.RegisterPlugin;
+import org.terasology.world.generation.facets.ElevationFacet;
 
 
 /**
@@ -24,7 +23,7 @@ import org.terasology.world.generator.plugin.RegisterPlugin;
  */
 //@RegisterPlugin /* uncomment to enable */
 @Produces(CaveObjectFacet.class)
-@Requires({@Facet(CaveLocationFacet.class), @Facet(value = SurfaceHeightFacet.class)})
+@Requires({@Facet(CaveLocationFacet.class), @Facet(value = ElevationFacet.class)})
 public class CaveObjectProvider implements ConfigurableFacetProvider, FacetProviderPlugin {
 
     private Noise densityNoiseGen;
@@ -61,7 +60,7 @@ public class CaveObjectProvider implements ConfigurableFacetProvider, FacetProvi
                     if (hasCave(caveFloorHeight) && caveFloorInt >= minY && caveFloorInt <= maxY
                             && hasCave(caveCeilingHeight) && caveCeilingInt >= minY && caveCeilingInt <= maxY) {
                         // Does it meet depth requirements
-                        SurfaceHeightFacet surfaceHeightFacet = region.getRegionFacet(SurfaceHeightFacet.class);
+                        ElevationFacet surfaceHeightFacet = region.getRegionFacet(ElevationFacet.class);
                         float surface = surfaceHeightFacet.getWorld(x, z);
                         int intSurface = TeraMath.floorToInt(surface);
                         boolean isDeepEnough = caveFloorInt < (float) intSurface - configuration.minDepth;

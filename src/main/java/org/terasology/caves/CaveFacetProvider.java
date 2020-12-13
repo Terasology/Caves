@@ -2,11 +2,13 @@
 // SPDX-License-Identifier: Apache-2.0
 package org.terasology.caves;
 
+import org.joml.Vector3ic;
 import org.terasology.math.geom.Vector3f;
 import org.terasology.math.geom.Vector3i;
 import org.terasology.utilities.procedural.BrownianNoise;
 import org.terasology.utilities.procedural.SimplexNoise;
 import org.terasology.utilities.procedural.SubSampledNoise;
+import org.terasology.world.block.BlockRegions;
 import org.terasology.world.generation.Facet;
 import org.terasology.world.generation.FacetProviderPlugin;
 import org.terasology.world.generation.GeneratingRegion;
@@ -32,7 +34,7 @@ public class CaveFacetProvider implements FacetProviderPlugin {
     public void setSeed(long seed) {
         for(int i=0; i<2; i++) {
             BrownianNoise baseNoise = new BrownianNoise(new SimplexNoise(seed + 2 + i), 4);
-            caveNoise[i] = new SubSampledNoise(baseNoise, new Vector3f(0.006f, 0.006f, 0.006f), 4);
+            caveNoise[i] = new SubSampledNoise(baseNoise, new org.joml.Vector3f(0.006f, 0.006f, 0.006f), 4);
         }
     }
 
@@ -44,8 +46,8 @@ public class CaveFacetProvider implements FacetProviderPlugin {
         // get noise in batch for performance reasons.  Getting it by individual position takes 10 times as long
         float[][] caveNoiseValues = new float[][]{caveNoise[0].noise(facet.getWorldRegion()),caveNoise[1].noise(facet.getWorldRegion())};
 
-        for (Vector3i pos : facet.getWorldRegion()) {
-            float depth = elevationFacet.getWorld(pos.x, pos.z) - pos.y;
+        for (Vector3ic pos : BlockRegions.iterableInPlace(facet.getWorldRegion())) {
+            float depth = elevationFacet.getWorld(pos.x(), pos.z()) - pos.y();
             float frequencyReduction = (float) Math.max(0, 0.3 - Math.max(depth, 0) / 400); //0: no reduction, 0.7: pretty much no caves. Also somewhat increases the tendency of caves to loop rather than continuing indefinitely.
             int i = facet.getWorldIndex(pos);
             float noiseValue = (float) Math.hypot(caveNoiseValues[0][i], caveNoiseValues[1][i]+frequencyReduction);

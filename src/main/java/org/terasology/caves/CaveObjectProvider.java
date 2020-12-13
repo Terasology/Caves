@@ -8,6 +8,7 @@ import org.terasology.math.TeraMath;
 import org.terasology.nui.properties.Range;
 import org.terasology.utilities.procedural.Noise;
 import org.terasology.utilities.procedural.WhiteNoise;
+import org.terasology.world.block.BlockRegion;
 import org.terasology.world.generation.ConfigurableFacetProvider;
 import org.terasology.world.generation.Facet;
 import org.terasology.world.generation.FacetProviderPlugin;
@@ -41,12 +42,12 @@ public class CaveObjectProvider implements ConfigurableFacetProvider, FacetProvi
         CaveObjectFacet facet =
                 new CaveObjectFacet(region.getRegion(), region.getBorderForFacet(CaveObjectFacet.class));
 
-        Region3i worldRegion = facet.getWorldRegion();
-        int minY = worldRegion.minY();
-        int maxY = worldRegion.maxY();
+        BlockRegion worldRegion = facet.getWorldRegion();
+        int minY = worldRegion.getMinY();
+        int maxY = worldRegion.getMaxY();
 
-        for (int z = worldRegion.minZ(); z <= worldRegion.maxZ(); z++) {
-            for (int x = worldRegion.minX(); x <= worldRegion.maxX(); x++) {
+        for (int z = worldRegion.getMinZ(); z <= worldRegion.getMaxZ(); z++) {
+            for (int x = worldRegion.getMinX(); x <= worldRegion.getMaxX(); x++) {
                 CaveLocation[] caveLocations = locationFacet.getWorld(x, z);
                 for (CaveLocation location : caveLocations) {
 

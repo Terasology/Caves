@@ -17,6 +17,7 @@ package org.terasology.caves;
 
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Maps;
+import org.joml.Vector3ic;
 import org.terasology.math.geom.BaseVector3i;
 import org.terasology.registry.CoreRegistry;
 import org.terasology.world.block.Block;
@@ -55,8 +56,8 @@ public class CaveObjectRasterizer implements WorldRasterizerPlugin {
         CaveObjectFacet facet = chunkRegion.getFacet(CaveObjectFacet.class);
         Block air = blockManager.getBlock(BlockManager.AIR_ID);
 
-        Map<BaseVector3i, CaveObjectType> entries = facet.getRelativeEntries();
-        for (BaseVector3i pos : entries.keySet()) {
+        Map<Vector3ic, CaveObjectType> entries = facet.getRelativeEntries();
+        for (Vector3ic pos : entries.keySet()) {
 
             // check if some other rasterizer has already placed something here
             if (chunk.getBlock(pos).equals(air)) {

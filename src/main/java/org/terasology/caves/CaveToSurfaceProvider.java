@@ -102,7 +102,7 @@ public class CaveToSurfaceProvider implements FacetProviderPlugin {
                     new Vector3i(surface).subZ(1),
                     new Vector3i(surface).addZ(1)
                 }) {
-                    while (!cavePositions.contains(adjacent) && adjacent.y <= densityFacet.getWorldRegion().maxY() && densityFacet.getWorld(adjacent) > 0) {
+                    while (!cavePositions.contains(adjacent) && densityFacet.getWorldRegion().encompasses(adjacent) && densityFacet.getWorld(adjacent) > 0) {
                         adjacent.addY(1);
                     }
                     // Only continue if the selected position is actually in a cave, rather than on the surface or above the selected region.

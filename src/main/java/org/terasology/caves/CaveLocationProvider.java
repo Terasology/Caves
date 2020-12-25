@@ -15,7 +15,6 @@
  */
 package org.terasology.caves;
 
-import org.terasology.math.Region3i;
 import org.terasology.world.block.BlockRegion;
 import org.terasology.world.generation.Facet;
 import org.terasology.world.generation.FacetProviderPlugin;
@@ -44,8 +43,8 @@ public class CaveLocationProvider implements FacetProviderPlugin {
                 new CaveLocationFacet(region.getRegion(), region.getBorderForFacet(CaveLocationFacet.class));
 
         BlockRegion worldRegion = caveFacet.getWorldRegion();
-        for (int x = worldRegion.getMinX(); x <= worldRegion.getMaxX(); ++x) {
-            for (int z = worldRegion.getMinZ(); z <= worldRegion.getMaxZ(); ++z) {
+        for (int x = worldRegion.minX(); x <= worldRegion.maxX(); ++x) {
+            for (int z = worldRegion.minZ(); z <= worldRegion.maxZ(); ++z) {
                 boolean insideCave = false;
                 int y;
                 // The cave locations in this x/z vertical
@@ -58,13 +57,13 @@ public class CaveLocationProvider implements FacetProviderPlugin {
                 // - if insideCave == false && cavePresent == false, in between caves, do nothing
                 // - if insideCave == true && cavePresent == false, found cave floor
                 // --- currentLocation floor = y, cavesLocations add current, current = null, insideCave = false
-                for (y = worldRegion.getMaxY(); y >= worldRegion.getMinY(); --y) {
+                for (y = worldRegion.maxY(); y >= worldRegion.minY(); --y) {
                     boolean cavePresent = caveFacet.getWorld(x, y, z);
 
                     if (!insideCave && cavePresent) {
                         insideCave = true;
                         currentLocation = new CaveLocation();
-                        if (y < worldRegion.getMaxY()) {
+                        if (y < worldRegion.maxY()) {
                             currentLocation.ceiling = y + 1;
                             // In the case where y == worldRegion.maxY, then ceiling will remain float.NaN (unknown)
                         }

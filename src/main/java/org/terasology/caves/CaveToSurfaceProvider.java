@@ -5,8 +5,6 @@ package org.terasology.caves;
 
 import org.joml.Vector3i;
 import org.joml.Vector3ic;
-import org.terasology.math.JomlUtil;
-import org.terasology.world.block.BlockRegions;
 import org.terasology.world.generation.Facet;
 import org.terasology.world.generation.FacetBorder;
 import org.terasology.world.generation.FacetProviderPlugin;
@@ -51,14 +49,15 @@ public class CaveToSurfaceProvider implements FacetProviderPlugin {
 
         Set<Vector3i> cavePositions = new HashSet<Vector3i>();
 
-        for (Vector3ic pos : BlockRegions.iterableInPlace(caveFacet.getWorldRegion())) {
-            if (caveFacet.getWorld(pos) && densityFacet.getWorldRegion().containsBlock(pos) && surfacesFacet.getWorldRegion().containsBlock(pos)) {
+        for (Vector3ic pos : caveFacet.getWorldRegion()) {
+            if (caveFacet.getWorld(pos) && densityFacet.getWorldRegion().contains(pos) && surfacesFacet.getWorldRegion().contains(pos)) {
                 cavePositions.add(new Vector3i(pos));
             }
         }
 
         // Ensure that the ocean can't immediately fall into a cave.
-        for (Vector3i pos : BlockRegions.iterable(densityFacet.getWorldRegion())) {
+        for (Vector3ic position : densityFacet.getWorldRegion()) {
+            Vector3i pos = new Vector3i(position);
             if (densityFacet.getWorld(pos) <= 0) {
                 if (cavePositions.contains(pos)) {
                     cavePositions.remove(pos);
@@ -87,7 +86,7 @@ public class CaveToSurfaceProvider implements FacetProviderPlugin {
                 while (cavePositions.contains(newSurface)) {
                     newSurface.add(0,-1,0);
                 }
-                if (newSurface.y >= surfacesFacet.getWorldRegion().getMinY()) {
+                if (newSurface.y >= surfacesFacet.getWorldRegion().minY()) {
                     newSurfaces.add(newSurface);
                     surfacesFacet.setWorld(newSurface, true);
                 }
@@ -104,7 +103,7 @@ public class CaveToSurfaceProvider implements FacetProviderPlugin {
                     new Vector3i(surface).sub(0,0,1),
                     new Vector3i(surface).add(0,0,1)
                 }) {
-                    while (!cavePositions.contains(adjacent) && densityFacet.getWorldRegion().containsBlock(adjacent) && densityFacet.getWorld(adjacent) > 0) {
+                    while (!cavePositions.contains(adjacent) && densityFacet.getWorldRegion().contains(adjacent) && densityFacet.getWorld(adjacent) > 0) {
                         adjacent.add(0,1,0);
                     }
                     // Only continue if the selected position is actually in a cave, rather than on the surface or above the selected region.
@@ -113,8 +112,8 @@ public class CaveToSurfaceProvider implements FacetProviderPlugin {
                             adjacent.sub(0,1,0);
                         }
                         if (
-                            surfacesFacet.getWorldRegion().containsBlock(adjacent) &&
-                            densityFacet.getWorldRegion().containsBlock(adjacent) &&
+                            surfacesFacet.getWorldRegion().contains(adjacent) &&
+                            densityFacet.getWorldRegion().contains(adjacent) &&
                             densityFacet.getWorld(adjacent) > 0 &&
                             !surfacesFacet.getWorld(adjacent)
                         ) {

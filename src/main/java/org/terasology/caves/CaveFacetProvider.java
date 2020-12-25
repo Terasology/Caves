@@ -3,12 +3,9 @@
 package org.terasology.caves;
 
 import org.joml.Vector3ic;
-import org.terasology.math.geom.Vector3f;
-import org.terasology.math.geom.Vector3i;
 import org.terasology.utilities.procedural.BrownianNoise;
 import org.terasology.utilities.procedural.SimplexNoise;
 import org.terasology.utilities.procedural.SubSampledNoise;
-import org.terasology.world.block.BlockRegions;
 import org.terasology.world.generation.Facet;
 import org.terasology.world.generation.FacetProviderPlugin;
 import org.terasology.world.generation.GeneratingRegion;
@@ -46,7 +43,7 @@ public class CaveFacetProvider implements FacetProviderPlugin {
         // get noise in batch for performance reasons.  Getting it by individual position takes 10 times as long
         float[][] caveNoiseValues = new float[][]{caveNoise[0].noise(facet.getWorldRegion()),caveNoise[1].noise(facet.getWorldRegion())};
 
-        for (Vector3ic pos : BlockRegions.iterableInPlace(facet.getWorldRegion())) {
+        for (Vector3ic pos : facet.getWorldRegion()) {
             float depth = elevationFacet.getWorld(pos.x(), pos.z()) - pos.y();
             float frequencyReduction = (float) Math.max(0, 0.3 - Math.max(depth, 0) / 400); //0: no reduction, 0.7: pretty much no caves. Also somewhat increases the tendency of caves to loop rather than continuing indefinitely.
             int i = facet.getWorldIndex(pos);

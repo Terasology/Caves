@@ -15,7 +15,7 @@
  */
 package org.terasology.caves;
 
-import org.terasology.math.Region3i;
+import org.terasology.world.block.BlockRegion;
 import org.terasology.world.generation.Facet;
 import org.terasology.world.generation.FacetProviderPlugin;
 import org.terasology.world.generation.GeneratingRegion;
@@ -42,7 +42,7 @@ public class CaveLocationProvider implements FacetProviderPlugin {
         CaveLocationFacet locationFacet =
                 new CaveLocationFacet(region.getRegion(), region.getBorderForFacet(CaveLocationFacet.class));
 
-        Region3i worldRegion = caveFacet.getWorldRegion();
+        BlockRegion worldRegion = caveFacet.getWorldRegion();
         for (int x = worldRegion.minX(); x <= worldRegion.maxX(); ++x) {
             for (int z = worldRegion.minZ(); z <= worldRegion.maxZ(); ++z) {
                 boolean insideCave = false;

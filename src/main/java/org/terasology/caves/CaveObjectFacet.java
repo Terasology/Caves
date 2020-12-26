@@ -16,6 +16,7 @@
 package org.terasology.caves;
 
 import org.terasology.math.Region3i;
+import org.terasology.world.block.BlockRegion;
 import org.terasology.world.generation.Border3D;
 import org.terasology.world.generation.facets.base.SparseObjectFacet3D;
 
@@ -24,7 +25,7 @@ import org.terasology.world.generation.facets.base.SparseObjectFacet3D;
  */
 public class CaveObjectFacet extends SparseObjectFacet3D<CaveObjectType> {
 
-    public CaveObjectFacet(Region3i targetRegion, Border3D border) {
+    public CaveObjectFacet(BlockRegion targetRegion, Border3D border) {
         super(targetRegion, border);
     }
 }

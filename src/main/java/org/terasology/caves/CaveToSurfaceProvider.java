@@ -3,8 +3,8 @@
 
 package org.terasology.caves;
 
-import org.terasology.math.JomlUtil;
-import org.terasology.math.geom.Vector3i;
+import org.joml.Vector3i;
+import org.joml.Vector3ic;
 import org.terasology.world.generation.Facet;
 import org.terasology.world.generation.FacetBorder;
 import org.terasology.world.generation.FacetProviderPlugin;
@@ -49,14 +49,15 @@ public class CaveToSurfaceProvider implements FacetProviderPlugin {
 
         Set<Vector3i> cavePositions = new HashSet<Vector3i>();
 
-        for (Vector3i pos : caveFacet.getWorldRegion()) {
-            if (caveFacet.getWorld(pos) && densityFacet.getWorldRegion().encompasses(pos) && surfacesFacet.getWorldRegion().encompasses(pos)) {
-                cavePositions.add(pos);
+        for (Vector3ic pos : caveFacet.getWorldRegion()) {
+            if (caveFacet.getWorld(pos) && densityFacet.getWorldRegion().contains(pos) && surfacesFacet.getWorldRegion().contains(pos)) {
+                cavePositions.add(new Vector3i(pos));
             }
         }
 
         // Ensure that the ocean can't immediately fall into a cave.
-        for (Vector3i pos : densityFacet.getWorldRegion()) {
+        for (Vector3ic position : densityFacet.getWorldRegion()) {
+            Vector3i pos = new Vector3i(position);
             if (densityFacet.getWorld(pos) <= 0) {
                 if (cavePositions.contains(pos)) {
                     cavePositions.remove(pos);
@@ -79,15 +80,15 @@ public class CaveToSurfaceProvider implements FacetProviderPlugin {
         // Mark any cave floors exposed to the sky as surface.
         Set<Vector3i> newSurfaces = new HashSet<>();
         for (Vector3i pos : cavePositions) {
-            if (surfacesFacet.getWorld(JomlUtil.from(pos))) {
-                surfacesFacet.setWorld(JomlUtil.from(pos), false);
+            if (surfacesFacet.getWorld(pos)) {
+                surfacesFacet.setWorld(pos, false);
                 Vector3i newSurface = new Vector3i(pos);
                 while (cavePositions.contains(newSurface)) {
-                    newSurface.addY(-1);
+                    newSurface.add(0,-1,0);
                 }
                 if (newSurface.y >= surfacesFacet.getWorldRegion().minY()) {
                     newSurfaces.add(newSurface);
-                    surfacesFacet.setWorld(JomlUtil.from(newSurface), true);
+                    surfacesFacet.setWorld(newSurface, true);
                 }
             }
         }
@@ -97,27 +98,27 @@ public class CaveToSurfaceProvider implements FacetProviderPlugin {
             Set<Vector3i> newerSurfaces = new HashSet<>();
             for (Vector3i surface : newSurfaces) {
                 for (Vector3i adjacent : new Vector3i[]{
-                    new Vector3i(surface).subX(1),
-                    new Vector3i(surface).addX(1),
-                    new Vector3i(surface).subZ(1),
-                    new Vector3i(surface).addZ(1)
+                    new Vector3i(surface).sub(1,0,0),
+                    new Vector3i(surface).add(1,0,0),
+                    new Vector3i(surface).sub(0,0,1),
+                    new Vector3i(surface).add(0,0,1)
                 }) {
-                    while (!cavePositions.contains(adjacent) && densityFacet.getWorldRegion().encompasses(adjacent) && densityFacet.getWorld(adjacent) > 0) {
-                        adjacent.addY(1);
+                    while (!cavePositions.contains(adjacent) && densityFacet.getWorldRegion().contains(adjacent) && densityFacet.getWorld(adjacent) > 0) {
+                        adjacent.add(0,1,0);
                     }
                     // Only continue if the selected position is actually in a cave, rather than on the surface or above the selected region.
                     if (cavePositions.contains(adjacent)) {
                         while (cavePositions.contains(adjacent)) {
-                            adjacent.subY(1);
+                            adjacent.sub(0,1,0);
                         }
                         if (
-                            surfacesFacet.getWorldRegion().encompasses(adjacent) &&
-                            densityFacet.getWorldRegion().encompasses(adjacent) &&
+                            surfacesFacet.getWorldRegion().contains(adjacent) &&
+                            densityFacet.getWorldRegion().contains(adjacent) &&
                             densityFacet.getWorld(adjacent) > 0 &&
-                            !surfacesFacet.getWorld(JomlUtil.from(adjacent))
+                            !surfacesFacet.getWorld(adjacent)
                         ) {
                             newerSurfaces.add(adjacent);
-                            surfacesFacet.setWorld(JomlUtil.from(adjacent), true);
+                            surfacesFacet.setWorld(adjacent, true);
                         }
                     }
                 }

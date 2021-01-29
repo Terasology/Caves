@@ -15,7 +15,6 @@
  */
 package org.terasology.caves;
 
-import org.terasology.math.Region3i;
 import org.terasology.world.block.BlockRegion;
 import org.terasology.world.generation.Border3D;
 import org.terasology.world.generation.facets.base.SparseObjectFacet3D;

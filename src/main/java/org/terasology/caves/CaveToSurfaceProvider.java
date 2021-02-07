@@ -3,6 +3,7 @@
 
 package org.terasology.caves;
 
+import com.google.common.collect.Sets;
 import org.joml.Vector3i;
 import org.joml.Vector3ic;
 import org.terasology.world.generation.Facet;
@@ -47,7 +48,7 @@ public class CaveToSurfaceProvider implements FacetProviderPlugin {
         SurfacesFacet surfacesFacet = region.getRegionFacet(SurfacesFacet.class);
         SeaLevelFacet seaLevel = region.getRegionFacet(SeaLevelFacet.class);
 
-        Set<Vector3ic> cavePositions = new HashSet();
+        Set<Vector3ic> cavePositions = Sets.newHashSetWithExpectedSize(caveFacet.getWorldRegion().getSizeX() * caveFacet.getWorldRegion().getSizeZ());
 
         for (Vector3ic pos : caveFacet.getWorldRegion()) {
             if (caveFacet.getWorld(pos) && densityFacet.getWorldRegion().contains(pos) && surfacesFacet.getWorldRegion().contains(pos)) {
@@ -77,7 +78,7 @@ public class CaveToSurfaceProvider implements FacetProviderPlugin {
         }
 
         // Mark any cave floors exposed to the sky as surface.
-        Set<Vector3i> newSurfaces = new HashSet<>();
+        Set<Vector3i> newSurfaces = Sets.newHashSet();
         for (Vector3ic pos : cavePositions) {
             if (surfacesFacet.getWorld(pos)) {
                 surfacesFacet.setWorld(pos, false);
@@ -97,9 +98,11 @@ public class CaveToSurfaceProvider implements FacetProviderPlugin {
         Vector3i a3 = new Vector3i();
         Vector3i a4 = new Vector3i();
 
+
+        Set<Vector3i> newerSurfaces = Sets.newHashSetWithExpectedSize(newSurfaces.size());
         // Mark cave floors near to those exposed to the sky as surface.
         for (int i = 0; i < SURFACE_SPREAD; i++) {
-            Set<Vector3i> newerSurfaces = new HashSet<>();
+            newerSurfaces.clear();
             for (Vector3i surface : newSurfaces) {
                 for (Vector3i adjacent : new Vector3i[]{
                         a1.set(surface).sub(1, 0, 0),
@@ -128,7 +131,9 @@ public class CaveToSurfaceProvider implements FacetProviderPlugin {
                     }
                 }
             }
+            Set<Vector3i> temp = newSurfaces;
             newSurfaces = newerSurfaces;
+            newerSurfaces = temp;
         }
     }
 }

@@ -2,6 +2,7 @@
 // SPDX-License-Identifier: Apache-2.0
 package org.terasology.caves;
 
+import org.joml.Math;
 import org.joml.Vector3ic;
 import org.terasology.utilities.procedural.BrownianNoise;
 import org.terasology.utilities.procedural.SimplexNoise;
@@ -41,15 +42,16 @@ public class CaveFacetProvider implements FacetProviderPlugin {
         CaveFacet facet = new CaveFacet(region.getRegion(), region.getBorderForFacet(CaveFacet.class));
 
         // get noise in batch for performance reasons.  Getting it by individual position takes 10 times as long
-        float[][] caveNoiseValues = new float[][]{caveNoise[0].noise(facet.getWorldRegion()),caveNoise[1].noise(facet.getWorldRegion())};
+        float[][] caveNoiseValues = new float[][]{caveNoise[0].noise(facet.getWorldRegion()), caveNoise[1].noise(facet.getWorldRegion())};
 
         for (Vector3ic pos : facet.getWorldRegion()) {
             float depth = elevationFacet.getWorld(pos.x(), pos.z()) - pos.y();
             float frequencyReduction = (float) Math.max(0, 0.3 - Math.max(depth, 0) / 400); //0: no reduction, 0.7: pretty much no caves. Also somewhat increases the tendency of caves to loop rather than continuing indefinitely.
             int i = facet.getWorldIndex(pos);
-            float noiseValue = (float) Math.hypot(caveNoiseValues[0][i], caveNoiseValues[1][i]+frequencyReduction);
-
-            facet.setWorld(pos, noiseValue < 0.06 + depth/2000f);
+            float xx = caveNoiseValues[0][i];
+            float yy = caveNoiseValues[1][i] + frequencyReduction;
+            float freqDepth = 0.06f + depth / 2000f;
+            facet.setWorld(pos, (xx * xx + yy * yy) < freqDepth * freqDepth);
         }
 
         region.setRegionFacet(CaveFacet.class, facet);

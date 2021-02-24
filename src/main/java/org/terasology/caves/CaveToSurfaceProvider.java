@@ -47,7 +47,7 @@ public class CaveToSurfaceProvider implements FacetProviderPlugin {
         SurfacesFacet surfacesFacet = region.getRegionFacet(SurfacesFacet.class);
         SeaLevelFacet seaLevel = region.getRegionFacet(SeaLevelFacet.class);
 
-        Set<Vector3ic> cavePositions = Sets.newHashSetWithExpectedSize(caveFacet.getWorldRegion().getSizeX() * caveFacet.getWorldRegion().getSizeZ());
+        Set<Vector3ic> cavePositions = Sets.newHashSetWithExpectedSize(0.33f * caveFacet.getWorldRegion().volume());
 
         for (Vector3ic pos : caveFacet.getWorldRegion()) {
             if (caveFacet.getWorld(pos) && densityFacet.getWorldRegion().contains(pos) && surfacesFacet.getWorldRegion().contains(pos)) {

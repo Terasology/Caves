@@ -17,7 +17,6 @@ import org.terasology.world.generation.facets.SeaLevelFacet;
 import org.terasology.world.generation.facets.SurfacesFacet;
 import org.terasology.world.generator.plugin.RegisterPlugin;
 
-import java.util.HashSet;
 import java.util.Set;
 
 /**
@@ -56,6 +55,7 @@ public class CaveToSurfaceProvider implements FacetProviderPlugin {
             }
         }
 
+        Vector3i belowPos = new Vector3i();
         // Ensure that the ocean can't immediately fall into a cave.
         for (Vector3ic pos : densityFacet.getWorldRegion()) {
             if (densityFacet.getWorld(pos) <= 0) {
@@ -66,7 +66,7 @@ public class CaveToSurfaceProvider implements FacetProviderPlugin {
                 if (pos.y() <= seaLevel.getSeaLevel() + 1) {
                     for (int x = -1; x <= 1; x++) {
                         for (int z = -1; z <= 1; z++) {
-                            Vector3i belowPos = new Vector3i(pos.x() + x, pos.y() - 1, pos.z() + z);
+                            belowPos.set(pos.x() + x, pos.y() - 1, pos.z() + z);
                             if (cavePositions.contains(belowPos)) {
                                 cavePositions.remove(belowPos);
                                 caveFacet.setWorld(belowPos, false);

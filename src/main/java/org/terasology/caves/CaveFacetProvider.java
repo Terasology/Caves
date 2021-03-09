@@ -4,16 +4,16 @@ package org.terasology.caves;
 
 import org.joml.Math;
 import org.joml.Vector3ic;
-import org.terasology.utilities.procedural.BrownianNoise;
-import org.terasology.utilities.procedural.SimplexNoise;
-import org.terasology.utilities.procedural.SubSampledNoise;
-import org.terasology.world.generation.Facet;
-import org.terasology.world.generation.FacetProviderPlugin;
-import org.terasology.world.generation.GeneratingRegion;
-import org.terasology.world.generation.Produces;
-import org.terasology.world.generation.Requires;
-import org.terasology.world.generation.facets.ElevationFacet;
-import org.terasology.world.generator.plugin.RegisterPlugin;
+import org.terasology.engine.utilities.procedural.BrownianNoise;
+import org.terasology.engine.utilities.procedural.SimplexNoise;
+import org.terasology.engine.utilities.procedural.SubSampledNoise;
+import org.terasology.engine.world.generation.Facet;
+import org.terasology.engine.world.generation.FacetProviderPlugin;
+import org.terasology.engine.world.generation.GeneratingRegion;
+import org.terasology.engine.world.generation.Produces;
+import org.terasology.engine.world.generation.Requires;
+import org.terasology.engine.world.generation.facets.ElevationFacet;
+import org.terasology.engine.world.generator.plugin.RegisterPlugin;
 
 /**
  * Generates 2 independent noise functions, then puts caves where both of them are

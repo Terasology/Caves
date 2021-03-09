@@ -15,13 +15,13 @@
  */
 package org.terasology.caves;
 
-import org.terasology.world.block.BlockRegion;
-import org.terasology.world.generation.Facet;
-import org.terasology.world.generation.FacetProviderPlugin;
-import org.terasology.world.generation.GeneratingRegion;
-import org.terasology.world.generation.Produces;
-import org.terasology.world.generation.Requires;
-import org.terasology.world.generator.plugin.RegisterPlugin;
+import org.terasology.engine.world.block.BlockRegion;
+import org.terasology.engine.world.generation.Facet;
+import org.terasology.engine.world.generation.FacetProviderPlugin;
+import org.terasology.engine.world.generation.GeneratingRegion;
+import org.terasology.engine.world.generation.Produces;
+import org.terasology.engine.world.generation.Requires;
+import org.terasology.engine.world.generator.plugin.RegisterPlugin;
 
 import java.util.LinkedList;
 import java.util.List;

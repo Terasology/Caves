@@ -6,16 +6,16 @@ package org.terasology.caves;
 import com.google.common.collect.Sets;
 import org.joml.Vector3i;
 import org.joml.Vector3ic;
-import org.terasology.world.generation.Facet;
-import org.terasology.world.generation.FacetBorder;
-import org.terasology.world.generation.FacetProviderPlugin;
-import org.terasology.world.generation.GeneratingRegion;
-import org.terasology.world.generation.Requires;
-import org.terasology.world.generation.Updates;
-import org.terasology.world.generation.facets.DensityFacet;
-import org.terasology.world.generation.facets.SeaLevelFacet;
-import org.terasology.world.generation.facets.SurfacesFacet;
-import org.terasology.world.generator.plugin.RegisterPlugin;
+import org.terasology.engine.world.generation.Facet;
+import org.terasology.engine.world.generation.FacetBorder;
+import org.terasology.engine.world.generation.FacetProviderPlugin;
+import org.terasology.engine.world.generation.GeneratingRegion;
+import org.terasology.engine.world.generation.Requires;
+import org.terasology.engine.world.generation.Updates;
+import org.terasology.engine.world.generation.facets.DensityFacet;
+import org.terasology.engine.world.generation.facets.SeaLevelFacet;
+import org.terasology.engine.world.generation.facets.SurfacesFacet;
+import org.terasology.engine.world.generator.plugin.RegisterPlugin;
 
 import java.util.Set;
 

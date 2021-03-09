@@ -16,14 +16,14 @@
 package org.terasology.caves;
 
 import org.joml.Vector3ic;
-import org.terasology.registry.CoreRegistry;
-import org.terasology.world.block.Block;
-import org.terasology.world.block.BlockManager;
-import org.terasology.world.chunks.Chunks;
-import org.terasology.world.chunks.CoreChunk;
-import org.terasology.world.generation.Region;
-import org.terasology.world.generation.WorldRasterizerPlugin;
-import org.terasology.world.generator.plugin.RegisterPlugin;
+import org.terasology.engine.registry.CoreRegistry;
+import org.terasology.engine.world.block.Block;
+import org.terasology.engine.world.block.BlockManager;
+import org.terasology.engine.world.chunks.Chunks;
+import org.terasology.engine.world.chunks.CoreChunk;
+import org.terasology.engine.world.generation.Region;
+import org.terasology.engine.world.generation.WorldRasterizerPlugin;
+import org.terasology.engine.world.generator.plugin.RegisterPlugin;
 
 /**
  * Just changing the density would leave caves below sea-level full of water, so a separate rasterizer is needed.

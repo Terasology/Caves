@@ -1,6 +1,6 @@
 {
     "id": "Caves",
-    "version": "1.1.0",
+    "version": "1.2.0-SNAPSHOT",
     "author": "Josharias",
     "displayName": "Caves",
     "description": "Adds configurable caves to the world",

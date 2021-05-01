@@ -1,11 +1,14 @@
 {
     "id": "Caves",
-    "version": "1.1.0-SNAPSHOT",
+    "version": "1.1.0",
     "author": "Josharias",
     "displayName": "Caves",
     "description": "Adds configurable caves to the world",
     "dependencies": [
-        { "id": "CoreAssets", "minVersion": "2.0.1" }
+        {
+            "id": "CoreAssets",
+            "minVersion": "2.0.1"
+        }
     ],
     "isWorld": true
 }

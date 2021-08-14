@@ -104,7 +104,7 @@ public class CaveObjectProvider implements ConfigurableFacetProvider, FacetProvi
         private float minDepth = 5f;
 
         @Override
-        public void copy(CaveObjectConfiguration other) {
+        public void copyFrom(CaveObjectConfiguration other) {
             this.density = other.density;
             this.minDepth = other.minDepth;
         }

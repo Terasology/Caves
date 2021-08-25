@@ -1,8 +1,7 @@
-// Copyright 2020 The Terasology Foundation
+// Copyright 2021 The Terasology Foundation
 // SPDX-License-Identifier: Apache-2.0
 package org.terasology.caves;
 
-import org.terasology.engine.entitySystem.Component;
 import org.terasology.engine.utilities.procedural.Noise;
 import org.terasology.engine.utilities.procedural.WhiteNoise;
 import org.terasology.engine.world.block.BlockRegion;
@@ -13,6 +12,7 @@ import org.terasology.engine.world.generation.GeneratingRegion;
 import org.terasology.engine.world.generation.Produces;
 import org.terasology.engine.world.generation.Requires;
 import org.terasology.engine.world.generation.facets.ElevationFacet;
+import org.terasology.gestalt.entitysystem.component.Component;
 import org.terasology.math.TeraMath;
 import org.terasology.nui.properties.Range;
 
@@ -94,7 +94,7 @@ public class CaveObjectProvider implements ConfigurableFacetProvider, FacetProvi
         this.configuration = (CaveObjectConfiguration) configuration;
     }
 
-    private static class CaveObjectConfiguration implements Component {
+    private static class CaveObjectConfiguration implements Component<CaveObjectConfiguration> {
         @Range(min = 0, max = 1.0f, increment = 0.01f, precision = 2,
                 description = "Define the overall amount of objects")
         private float density = 0.06f;
@@ -102,6 +102,12 @@ public class CaveObjectProvider implements ConfigurableFacetProvider, FacetProvi
         @Range(min = 0, max = 250f, increment = 1f, precision = 0,
                 description = "The minimum distance below the surface before objects start to appear")
         private float minDepth = 5f;
+
+        @Override
+        public void copyFrom(CaveObjectConfiguration other) {
+            this.density = other.density;
+            this.minDepth = other.minDepth;
+        }
     }
 
 }

@@ -94,14 +94,14 @@ public class CaveObjectProvider implements ConfigurableFacetProvider, FacetProvi
         this.configuration = (CaveObjectConfiguration) configuration;
     }
 
-    private static class CaveObjectConfiguration implements Component<CaveObjectConfiguration> {
+    public static class CaveObjectConfiguration implements Component<CaveObjectConfiguration> {
         @Range(min = 0, max = 1.0f, increment = 0.01f, precision = 2,
                 description = "Define the overall amount of objects")
-        private float density = 0.06f;
+        public float density = 0.06f;
 
         @Range(min = 0, max = 250f, increment = 1f, precision = 0,
                 description = "The minimum distance below the surface before objects start to appear")
-        private float minDepth = 5f;
+        public float minDepth = 5f;
 
         @Override
         public void copyFrom(CaveObjectConfiguration other) {

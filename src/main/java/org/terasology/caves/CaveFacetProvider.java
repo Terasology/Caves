@@ -1,5 +1,6 @@
 // Copyright 2020 The Terasology Foundation
 // SPDX-License-Identifier: Apache-2.0
+
 package org.terasology.caves;
 
 import org.joml.Math;
@@ -30,7 +31,7 @@ public class CaveFacetProvider implements FacetProviderPlugin {
 
     @Override
     public void setSeed(long seed) {
-        for(int i=0; i<2; i++) {
+        for (int i = 0; i < 2; i++) {
             BrownianNoise baseNoise = new BrownianNoise(new SimplexNoise(seed + 2 + i), 4);
             caveNoise[i] = new SubSampledNoise(baseNoise, new org.joml.Vector3f(0.006f, 0.006f, 0.006f), 4);
         }
@@ -46,7 +47,8 @@ public class CaveFacetProvider implements FacetProviderPlugin {
 
         for (Vector3ic pos : facet.getWorldRegion()) {
             float depth = elevationFacet.getWorld(pos.x(), pos.z()) - pos.y();
-            float frequencyReduction = (float) Math.max(0, 0.3 - Math.max(depth, 0) / 400); //0: no reduction, 0.7: pretty much no caves. Also somewhat increases the tendency of caves to loop rather than continuing indefinitely.
+            //0: no reduction, 0.7: pretty much no caves. Also somewhat increases the tendency of caves to loop rather than continuing indefinitely.
+            float frequencyReduction = (float) Math.max(0, 0.3 - Math.max(depth, 0) / 400);
             int i = facet.getWorldIndex(pos);
             float xx = caveNoiseValues[0][i];
             float yy = caveNoiseValues[1][i] + frequencyReduction;

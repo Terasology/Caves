@@ -26,12 +26,21 @@ import java.util.Set;
  */
 @RegisterPlugin
 @Updates({
-    @Facet(value = SurfacesFacet.class, border = @FacetBorder(sides = CaveToSurfaceProvider.SURFACE_SPREAD, bottom = CaveToSurfaceProvider.SURFACE_SPREAD, top = 20)),
-    @Facet(value = CaveFacet.class, border = @FacetBorder(sides = CaveToSurfaceProvider.SURFACE_SPREAD, bottom = CaveToSurfaceProvider.SURFACE_SPREAD, top = 20))
+    @Facet(value = SurfacesFacet.class, border = @FacetBorder(
+            sides = CaveToSurfaceProvider.SURFACE_SPREAD,
+            bottom = CaveToSurfaceProvider.SURFACE_SPREAD, top = 20)
+    ),
+    @Facet(value = CaveFacet.class, border = @FacetBorder(
+            sides = CaveToSurfaceProvider.SURFACE_SPREAD,
+            bottom = CaveToSurfaceProvider.SURFACE_SPREAD, top = 20)
+    )
 })
 @Requires({
     @Facet(SeaLevelFacet.class),
-    @Facet(value = DensityFacet.class, border = @FacetBorder(sides = CaveToSurfaceProvider.SURFACE_SPREAD, bottom = CaveToSurfaceProvider.SURFACE_SPREAD, top = 20))
+    @Facet(value = DensityFacet.class, border = @FacetBorder(
+            sides = CaveToSurfaceProvider.SURFACE_SPREAD,
+            bottom = CaveToSurfaceProvider.SURFACE_SPREAD, top = 20)
+    )
 })
 public class CaveToSurfaceProvider implements FacetProviderPlugin {
     public static final int SURFACE_SPREAD = 3;
@@ -110,7 +119,9 @@ public class CaveToSurfaceProvider implements FacetProviderPlugin {
                         a3.set(surface).sub(0, 0, 1),
                         a4.set(surface).add(0, 0, 1)
                 }) {
-                    while (!cavePositions.contains(adjacent) && densityFacet.getWorldRegion().contains(adjacent) && densityFacet.getWorld(adjacent) > 0) {
+                    while (!cavePositions.contains(adjacent)
+                            && densityFacet.getWorldRegion().contains(adjacent)
+                            && densityFacet.getWorld(adjacent) > 0) {
                         adjacent.add(0, 1, 0);
                     }
                     // Only continue if the selected position is actually in a cave, rather than on the surface or above the selected region.
